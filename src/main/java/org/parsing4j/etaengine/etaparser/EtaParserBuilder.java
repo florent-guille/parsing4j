@@ -425,7 +425,19 @@ public class EtaParserBuilder {
 
 		}
 
-		return new EtaParser(states, terminalsMap);
+//		for (EtaParserBuilderState state : builderStates) {
+//			System.out.println("==== State " + state.getId() + " ====");
+//			for (EtaMarkedRule rule : state.getMarkedRules()) {
+//				System.out.println("| " + rule.getConstrainedRule().getRule().getName() + " : " + rule.getIndex() + " "
+//						+ rule.getConstrainedRule().getLookAheads());
+//			}
+//			for (Entry<EtaSymbol, EtaParserBuilderState> transition : state.getTransitions().entrySet()) {
+//				System.out.println(transition.getKey() + " => " + transition.getValue().getId());
+//			}
+//			System.out.println();
+//		}
+
+		return new EtaParser(states, terminalsMap, eof);
 	}
 
 	public static final EtaParserAction checkForConflict(EtaParserBuilderState state, EtaParserAction current,

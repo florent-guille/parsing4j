@@ -17,7 +17,7 @@ public class EtaParserBuilderState {
 
 	private Set<EtaMarkedRule> markedRules;
 	private int id;
-	private Map<EtaSymbol,EtaParserBuilderState> transitions;
+	private Map<EtaSymbol, EtaParserBuilderState> transitions;
 
 	public EtaParserBuilderState(Set<EtaMarkedRule> markedRules) {
 		this.markedRules = markedRules;
@@ -37,8 +37,9 @@ public class EtaParserBuilderState {
 				if (transition.getKey() instanceof EtaNonTerminal nonTerminal) {
 
 					for (EtaRule rule : generators.get(nonTerminal)) {
-						EtaMarkedRule newRule = new EtaMarkedRule(
-								new EtaConstrainedRule(rule, currentRule.getCurrentFollowSet()), 0);
+						EtaMarkedRule newRule = new EtaMarkedRule(new EtaConstrainedRule(rule,
+								currentRule.getConstrainedRule().getFollowSets().get(transition.getValue().getId())),
+								0);
 						if (!markedRules.contains(newRule)) {
 							newRule.getConstrainedRule().computeFollowSets(firstSets, empty);
 							markedRules.add(newRule);
@@ -74,12 +75,12 @@ public class EtaParserBuilderState {
 			markedRules.add(rule);
 		}
 	}
-	
-	public void setTransitions(Map<EtaSymbol,EtaParserBuilderState> transitions) {
+
+	public void setTransitions(Map<EtaSymbol, EtaParserBuilderState> transitions) {
 		this.transitions = transitions;
 	}
-	
-	public Map<EtaSymbol,EtaParserBuilderState> getTransitions(){
+
+	public Map<EtaSymbol, EtaParserBuilderState> getTransitions() {
 		return transitions;
 	}
 

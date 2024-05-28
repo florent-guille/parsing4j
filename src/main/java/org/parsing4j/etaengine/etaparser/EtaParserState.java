@@ -33,4 +33,9 @@ public class EtaParserState {
 	public Set<EtaRule> getActiveRules() {
 		return activeRules;
 	}
+
+	@Override
+	public String toString() {
+		return "EtaParserState(" + id + ")";
+	}
 }
