@@ -23,6 +23,7 @@ public class EtaParser {
 		this.states = states;
 		this.terminalsMap = terminalsMap;
 		this.eof = eof;
+		this.reducer = ParsedNode::new;
 	}
 
 	public EtaTerminal getTerminal(String name) {
@@ -86,7 +87,7 @@ public class EtaParser {
 				tokenflow.pushback(token);
 				stateStack.push(states.get(stateStack.peek().getGotos()[action.rule().getVariable().getId()]));
 				symbolStack.push(action.rule().getVariable());
-				dataStack.push(List.copyOf(acc));
+				dataStack.push(reducer.apply(action.rule(), List.copyOf(acc)));
 			}
 
 			if (action.type() == EtaParserAction.ACCEPT) {
@@ -115,6 +116,33 @@ public class EtaParser {
 				return "Action(Reduce -> " + rule.getName() + ", " + nodeIndex + ")";
 			}
 			return null;
+		}
+	}
+
+	public static class ParsedNode {
+
+		private EtaRule rule;
+		private List<Object> nodes;
+
+		public ParsedNode(EtaRule rule, List<Object> nodes) {
+			this.rule = rule;
+			this.nodes = nodes;
+		}
+
+		public List<Object> getNodes() {
+			return nodes;
+		}
+
+		@Override
+		public String toString() {
+			return "ParsedNode(" + rule.getName() + ")";
+		}
+
+		public static List<Object> getChildren(Object obj) {
+			if (obj instanceof ParsedNode node) {
+				return node.getNodes();
+			}
+			return List.of();
 		}
 	}
 }

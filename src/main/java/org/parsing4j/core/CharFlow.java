@@ -31,7 +31,7 @@ public class CharFlow {
 			throw new EndReachedException(line, col);
 		}
 		if (target != peek()) {
-			throw new UnexpectedCharException(peek(), line, col);
+			throw new UnexpectedCharException(target, peek(), line, col);
 		}
 		if (target == '\n') {
 			line++;
@@ -75,18 +75,19 @@ public class CharFlow {
 	@SuppressWarnings("serial")
 	public static class UnexpectedCharException extends CharFlowException {
 
-		private int target, line, col;
+		private int target, found, line, col;
 
-		public UnexpectedCharException(int target, int line, int col) {
+		public UnexpectedCharException(int target, int found, int line, int col) {
 			super();
 			this.target = target;
+			this.found = found;
 			this.line = line;
 			this.col = col;
 		}
 
 		@Override
 		public String getMessage() {
-			return "Unexpected character at line %s, col %s: \"%s\"".formatted(target, line, col);
+			return "Expected '%s', got '%s' at line %s, col %s".formatted((char)target, (char)found, line, col);
 		}
 
 	}

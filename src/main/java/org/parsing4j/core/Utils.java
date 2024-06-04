@@ -3,6 +3,7 @@ package org.parsing4j.core;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class Utils {
@@ -52,6 +53,21 @@ public class Utils {
 		return treeRepr(current, nameExtractor, childrenExtractor, "", "");
 	}
 
+	public static int getDigitValue(char c, int base) {
+		if (c >= 0x30 && c <= 0x39) {
+			return c - 0x30;
+		}
+
+		if (c >= 0x41 && c <= 0x5A) {
+			return c - 0x41 + 10;
+		}
+
+		if (c >= 0x61 && c <= 0x7D) {
+			return c - 0x61 + 10;
+		}
+		return -1;
+	}
+
 	public static class Pair<A, B> {
 		public A left;
 		public B right;
@@ -59,6 +75,22 @@ public class Utils {
 		public Pair(A left, B right) {
 			this.left = left;
 			this.right = right;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(left, right);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof Pair pair && Objects.equals(this.left, pair.left)
+					&& Objects.equals(this.right, pair.right);
+		}
+
+		@Override
+		public String toString() {
+			return "(" + left + "," + right + ")";
 		}
 
 	}
