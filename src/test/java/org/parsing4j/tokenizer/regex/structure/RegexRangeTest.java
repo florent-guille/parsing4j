@@ -1,15 +1,15 @@
-package org.parsing4j.tokenizer.regex;
+package org.parsing4j.tokenizer.regex.structure;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.parsing4j.core.IntIdentifiable;
 import org.parsing4j.core.Utils.Pair;
+import org.parsing4j.tokenizer.regex.structure.RegexRange;
 
 public class RegexRangeTest {
 

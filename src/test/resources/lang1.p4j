@@ -1,0 +1,12 @@
+start_symbol S;
+
+rules{
+	[main] := S -> expr;
+}
+
+patterns{
+	'id' := "[a-zA-Z][a-zA-Z0-9,_$]";
+	'int' := "[0-9]+";
+	'real' := "[0-9]+.[0-9]*|[0-9]*.[0-9]+";
+	'bool' := "TRUE|true|FALSE|false";
+}

@@ -1,4 +1,4 @@
-package org.parsing4j.tokenizer.regex;
+package org.parsing4j.tokenizer.regex.structure;
 
 import java.util.List;
 

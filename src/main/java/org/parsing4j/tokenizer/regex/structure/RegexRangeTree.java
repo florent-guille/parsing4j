@@ -1,6 +1,10 @@
-package org.parsing4j.tokenizer.regex;
+package org.parsing4j.tokenizer.regex.structure;
 
-public class RegexRangeTree {
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+
+public class RegexRangeTree implements Iterable<RegexRangeTreeNode> {
 
 	private RegexRangeTreeNode root;
 
@@ -107,17 +111,38 @@ public class RegexRangeTree {
 		return node;
 	}
 
-	private static class RegexRangeTreeNode {
+	@Override
+	public Iterator<RegexRangeTreeNode> iterator() {
+		return new RegexRangeTreeIterator(this);
+	}
 
-		private RegexRange range;
-		private int target;
-		private RegexRangeTreeNode left, right;
+	private static class RegexRangeTreeIterator implements Iterator<RegexRangeTreeNode> {
 
-		private int height;
+		private Deque<RegexRangeTreeNode> stack;
 
-		public RegexRangeTreeNode(RegexRange range, int target) {
-			this.range = range;
-			this.target = target;
+		public RegexRangeTreeIterator(RegexRangeTree tree) {
+			this.stack = new ArrayDeque<>();
+
+			if (tree.root != null) {
+				stack.push(tree.root);
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !stack.isEmpty();
+		}
+
+		@Override
+		public RegexRangeTreeNode next() {
+			RegexRangeTreeNode node = stack.poll();
+			if (node.left != null) {
+				stack.push(node.left);
+			}
+			if (node.right != null) {
+				stack.push(node.right);
+			}
+			return node;
 		}
 
 	}

@@ -1,8 +1,10 @@
-package org.parsing4j.tokenizer.regex;
+package org.parsing4j.tokenizer.regex.structure;
 
 import org.junit.Test;
 import org.parsing4j.core.CharFlow;
 import org.parsing4j.core.Utils;
+import org.parsing4j.tokenizer.regex.structure.Regex;
+import org.parsing4j.tokenizer.regex.structure.RegexParser;
 
 public class RegexParserTest {
 
