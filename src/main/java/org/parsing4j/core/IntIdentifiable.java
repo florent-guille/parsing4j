@@ -2,7 +2,7 @@ package org.parsing4j.core;
 
 public class IntIdentifiable {
 
-	private int id;
+	protected int id;
 
 	public IntIdentifiable(int id) {
 		this.id = id;

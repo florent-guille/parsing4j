@@ -8,21 +8,33 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.parsing4j.core.IntIdentifiable;
 import org.parsing4j.core.Utils.Pair;
+import org.parsing4j.etaengine.etaregex.EtaTerminal;
 import org.parsing4j.tokenizer.regex.structure.RegexRange;
 
 public class RegexTokenizerBuildNode extends IntIdentifiable {
 
 	private Map<RegexRange, Set<RegexTokenizerBuildNode>> transitions;
 	private Set<RegexTokenizerBuildNode> epsilonTransitions;
+	private Pair<MatchingPolicy, EtaTerminal> pattern;
 
 	public RegexTokenizerBuildNode(int id) {
 		super(id);
 		this.transitions = new HashMap<>();
 		this.epsilonTransitions = new HashSet<>();
+	}
+
+	public void setPattern(Pair<MatchingPolicy, EtaTerminal> pattern) {
+		this.pattern = pattern;
+	}
+
+	public Pair<MatchingPolicy, EtaTerminal> getPattern() {
+		return pattern;
 	}
 
 	public void addTransition(RegexRange range, RegexTokenizerBuildNode target) {
@@ -44,8 +56,28 @@ public class RegexTokenizerBuildNode extends IntIdentifiable {
 		return epsilonTransitions;
 	}
 
-	public List<RegexTokenizerNode> determinize(RegexTokenizerBuildNode buildRoot,
-			List<RegexTokenizerBuildNode> buildNodes) {
+	public String graphvizRepr(String prefix) {
+		List<String> lines = new ArrayList<>();
+
+		if (pattern != null) {
+			lines.add(prefix + id + " [peripheries=2,label=\"" + pattern.right.getName() + "\"]");
+		}
+
+		for (Entry<RegexRange, Set<RegexTokenizerBuildNode>> transition : transitions.entrySet()) {
+			for (RegexTokenizerBuildNode target : transition.getValue()) {
+				lines.add(prefix + id + " -> " + prefix + target.id + " [label=\"" + transition.getKey() + "\"]");
+			}
+		}
+
+		for (RegexTokenizerBuildNode target : epsilonTransitions) {
+			lines.add(prefix + id + " -> " + prefix + target.id + " [label=\"epsilon\"]");
+		}
+
+		return lines.stream().collect(Collectors.joining("\n"));
+	}
+
+	public static List<RegexTokenizerNode> determinize(RegexTokenizerBuildNode buildRoot,
+			List<RegexTokenizerBuildNode> buildNodes) throws Exception {
 		List<Set<RegexTokenizerBuildNode>> closures = new ArrayList<>(buildNodes.size());
 
 		for (RegexTokenizerBuildNode node : buildNodes) {
@@ -75,6 +107,25 @@ public class RegexTokenizerBuildNode extends IntIdentifiable {
 			Set<RegexTokenizerBuildNode> currentSet = stack.pop();
 			RegexTokenizerNode currentNode = nodeMap.get(currentSet);
 
+			Pair<MatchingPolicy, EtaTerminal> pattern = null;
+			for (RegexTokenizerBuildNode node : currentSet) {
+				if (node.getPattern() == null)
+					continue;
+
+				if (pattern == null) {
+					pattern = node.getPattern();
+					continue;
+				}
+
+				if (!Objects.equals(pattern, node.pattern)) {
+					throw new Exception(
+							"Conflict between patterns %s and %s".formatted(pattern.right, node.pattern.right));
+				}
+
+			}
+
+			currentNode.setPattern(pattern);
+
 			List<Pair<RegexRange, Set<RegexTokenizerBuildNode>>> markedRanges = new ArrayList<>();
 
 			for (RegexTokenizerBuildNode node : currentSet) {
@@ -91,6 +142,7 @@ public class RegexTokenizerBuildNode extends IntIdentifiable {
 				for (RegexTokenizerBuildNode node : transition.right) {
 					completed.addAll(closures.get(node.getId()));
 				}
+
 				RegexTokenizerNode target = nodeMap.get(completed);
 				if (target == null) {
 					target = new RegexTokenizerNode(nodes.size());
@@ -101,7 +153,7 @@ public class RegexTokenizerBuildNode extends IntIdentifiable {
 				currentNode.getTree().insertRange(transition.left, target.getId());
 			}
 		}
-		
+
 		return new ArrayList<>(nodes);
 	}
 

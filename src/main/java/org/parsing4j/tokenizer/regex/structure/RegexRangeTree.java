@@ -12,6 +12,10 @@ public class RegexRangeTree implements Iterable<RegexRangeTreeNode> {
 
 	}
 
+	public RegexRangeTreeNode getRoot() {
+		return root;
+	}
+
 	public void insertRange(RegexRange range, int target) {
 		root = insert(root, range, target);
 	}
@@ -21,15 +25,15 @@ public class RegexRangeTree implements Iterable<RegexRangeTreeNode> {
 
 		while (current != null) {
 			int comp = current.range.compareTo(c);
-
+			
 			if (comp > 0) {
 				current = current.left;
-				break;
+				continue;
 			}
 
 			if (comp < 0) {
 				current = current.right;
-				break;
+				continue;
 			}
 
 			return current.target;

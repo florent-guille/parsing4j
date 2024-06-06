@@ -1,7 +1,6 @@
 package org.parsing4j.tokenizer.regex.structure;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
@@ -11,7 +10,7 @@ public abstract class Regex {
 
 	public abstract String getPrettyRepr();
 
-	public List<Regex> unfold() {
+	public Deque<Regex> unfold() {
 		Deque<Regex> input = new ArrayDeque<>();
 		Deque<Regex> unfolded = new ArrayDeque<>();
 		input.push(this);
@@ -24,7 +23,7 @@ public abstract class Regex {
 				input.push(child);
 			}
 		}
-		return new ArrayList<>(unfolded);
+		return unfolded;
 	}
 	
 	@Override

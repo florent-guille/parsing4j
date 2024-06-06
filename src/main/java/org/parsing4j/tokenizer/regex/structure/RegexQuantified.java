@@ -12,6 +12,10 @@ public class RegexQuantified extends Regex {
 		this.target = target;
 	}
 
+	public int getQuantifier() {
+		return quantifier;
+	}
+
 	@Override
 	public List<Regex> getChildren() {
 		return List.of(target);

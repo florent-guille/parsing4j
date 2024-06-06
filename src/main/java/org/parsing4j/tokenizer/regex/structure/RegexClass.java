@@ -10,6 +10,10 @@ public class RegexClass extends Regex {
 		this.ranges = ranges;
 	}
 
+	public List<RegexRange> getRanges() {
+		return ranges;
+	}
+
 	@Override
 	public List<Regex> getChildren() {
 		return List.of();
