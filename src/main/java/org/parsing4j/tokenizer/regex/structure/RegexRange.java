@@ -162,6 +162,10 @@ public class RegexRange implements Comparable<RegexRange> {
 
 			if ((size != acc.size() || i == points.size() - 1) && candidate != null) {
 				result.add(new Pair<>(new RegexRange(pos, point.pos - 1), candidate));
+
+			}
+
+			if (!(candidate != null && size == acc.size())) {
 				pos = point.pos;
 				isStart = point.isStart;
 			}

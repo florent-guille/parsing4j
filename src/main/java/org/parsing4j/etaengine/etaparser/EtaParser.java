@@ -138,8 +138,8 @@ public class EtaParser {
 			return "ParsedNode(" + rule.getName() + ")";
 		}
 
-		public static List<Object> getChildren(Object obj) {
-			if (obj instanceof ParsedNode node) {
+		public static List<Object> getChildren(Object o) {
+			if (o instanceof ParsedNode node) {
 				return node.getNodes();
 			}
 			return List.of();

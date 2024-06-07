@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 import org.parsing4j.core.CharFlow;
 import org.parsing4j.core.Utils;
@@ -22,6 +23,9 @@ import org.parsing4j.core.Utils;
  * I -> '^' ('(' number ',' number ')')?
  **/
 public class RegexParser {
+
+	public static final Map<String, Regex> POSIX_CLASSES = Map.ofEntries(Map.entry("Blank", new RegexClass(List
+			.of(new RegexRange(0x9, 0xD), new RegexRange(0x20, 0x20), new RegexRange(0x85), new RegexRange(0xA0)))));
 
 	public static Regex readRegex(CharFlow flow) throws Exception {
 		Deque<Regex> choices = new ArrayDeque<>();
@@ -149,6 +153,15 @@ public class RegexParser {
 			return new RegexClass(result);
 		}
 
+		if (flow.peek() == '{') {
+			String name = readPosixName(flow);
+			if (!POSIX_CLASSES.containsKey(name)) {
+				throw new Exception("Unknown posix class: %s".formatted(name));
+			}
+
+			return POSIX_CLASSES.get(name);
+		}
+
 		return new RegexClass(List.of(new RegexRange(readChar(flow))));
 	}
 
@@ -201,9 +214,20 @@ public class RegexParser {
 				builder.append('\\');
 				continue;
 			}
-			builder.append((char)flow.next());
+			builder.append((char) flow.next());
 		}
 		flow.eat('\'');
+		return builder.toString();
+	}
+
+	private static String readPosixName(CharFlow flow) throws Exception {
+		flow.eat('{');
+		StringBuilder builder = new StringBuilder();
+
+		while (flow.peek() != '}') {
+			builder.append((char) flow.next());
+		}
+		flow.eat('}');
 		return builder.toString();
 	}
 

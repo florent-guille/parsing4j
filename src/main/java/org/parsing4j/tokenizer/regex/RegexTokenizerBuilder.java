@@ -30,6 +30,10 @@ public class RegexTokenizerBuilder {
 		this.patterns = new HashMap<>();
 	}
 
+	public RegexTokenizerBuilder(Map<EtaTerminal, RegexTokenizerBuilderEntry> patterns) {
+		this.patterns = patterns;
+	}
+
 	public void addPattern(EtaTerminal terminal, Regex regex, MatchingPolicy policy, Set<String> abovePatterns) {
 		this.patterns.put(terminal, new RegexTokenizerBuilderEntry(regex, policy, abovePatterns));
 	}
@@ -39,7 +43,7 @@ public class RegexTokenizerBuilder {
 		addPattern(terminal, RegexParser.readRegex(new CharFlow(regex)), policy, abovePatterns);
 	}
 
-	public RegexTokenizer build() throws Exception {
+	public RegexTokenizer build(EtaTerminal eof) throws Exception {
 		Deque<RegexTokenizerBuildNode> buildNodes = new ArrayDeque<>();
 		Supplier<RegexTokenizerBuildNode> nodeFactory = () -> {
 			RegexTokenizerBuildNode result = new RegexTokenizerBuildNode(buildNodes.size());
@@ -145,12 +149,13 @@ public class RegexTokenizerBuilder {
 			end.setPattern(new Pair<>(pattern.getValue().policy, pattern.getKey()));
 		}
 
-		List<RegexTokenizerNode> nodes = RegexTokenizerBuildNode.determinize(buildRoot, new ArrayList<>(buildNodes.reversed()));
+		List<RegexTokenizerNode> nodes = RegexTokenizerBuildNode.determinize(buildRoot,
+				new ArrayList<>(buildNodes.reversed()));
 
-		return new RegexTokenizer(nodes);
+		return new RegexTokenizer(nodes, eof);
 	}
 
-	private record RegexTokenizerBuilderEntry(Regex regex, MatchingPolicy policy, Set<String> abovePatterns) {
+	public record RegexTokenizerBuilderEntry(Regex regex, MatchingPolicy policy, Set<String> abovePatterns) {
 
 	}
 }

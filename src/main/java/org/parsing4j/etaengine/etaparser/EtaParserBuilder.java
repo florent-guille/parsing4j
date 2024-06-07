@@ -43,6 +43,13 @@ public class EtaParserBuilder {
 
 	public EtaParserBuilder() {
 		this.rawRules = new HashMap<>();
+
+		this.terminalsMap = new HashMap<>();
+	}
+
+	public EtaParserBuilder(Map<String, Pair<String, EtaRegex>> rawRules) {
+		this.rawRules = rawRules;
+		this.terminalsMap = new HashMap<>();
 	}
 
 	public void addRawRule(String name, String variable, EtaRegex regex) {
@@ -68,7 +75,6 @@ public class EtaParserBuilder {
 	}
 
 	public void buildRules() {
-		this.terminalsMap = new HashMap<>();
 		this.nonTerminalsMap = new HashMap<>();
 		this.rules = new HashMap<>();
 		this.generators = new HashMap<>();
@@ -425,19 +431,14 @@ public class EtaParserBuilder {
 
 		}
 
-//		for (EtaParserBuilderState state : builderStates) {
-//			System.out.println("==== State " + state.getId() + " ====");
-//			for (EtaMarkedRule rule : state.getMarkedRules()) {
-//				System.out.println("| " + rule.getConstrainedRule().getRule().getName() + " : " + rule.getIndex() + " "
-//						+ rule.getConstrainedRule().getLookAheads());
-//			}
-//			for (Entry<EtaSymbol, EtaParserBuilderState> transition : state.getTransitions().entrySet()) {
-//				System.out.println(transition.getKey() + " => " + transition.getValue().getId());
-//			}
-//			System.out.println();
-//		}
-
 		return new EtaParser(states, terminalsMap, eof);
+	}
+
+	public EtaParser build(String startVariableName) throws ParserConflictException {
+		buildRules();
+		computeFirstSets();
+		computeStates(startVariableName);
+		return createParser();
 	}
 
 	public static final EtaParserAction checkForConflict(EtaParserBuilderState state, EtaParserAction current,

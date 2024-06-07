@@ -1,0 +1,21 @@
+startSymbol S;
+
+rules{
+	[main] : S --> E;
+	[sum] : E --> T ('+' T)*;
+	[product] : T --> F ('*' F)*;
+	[parent] : F --> '(' E ')';
+	[var] : F --> 'id';
+	[number] : F --> 'int' | 'real';
+}
+
+patterns{
+	'id' : "[a-zA-Z][a-zA-Z0-9,_$]";
+	'int' : "[0-9]+";
+	'real' : "[0-9]+.[0-9]*|[0-9]*.[0-9]+";
+	
+	'+' : "'+'";
+	'*' : "'*'";
+	'(' : "'('";
+	')' : "')'";
+}

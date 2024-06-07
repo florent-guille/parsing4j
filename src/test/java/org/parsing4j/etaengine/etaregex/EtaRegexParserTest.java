@@ -12,7 +12,7 @@ import org.parsing4j.etaengine.etaparser.EtaParserBuilder;
 public class EtaRegexParserTest {
 
 	@Test
-	public void parserTest$Test1() throws Exception {
+	public void parserTest$1() throws Exception {
 		EtaParserBuilder builder = new EtaParserBuilder();
 		builder.addRawRule("main", "S", "E");
 		builder.addRawRule("sum", "E", "T ('+' T)*");

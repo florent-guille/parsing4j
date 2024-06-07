@@ -27,6 +27,7 @@ public class CharFlow {
 	}
 
 	public void eat(int target) throws IOException, CharFlowException {
+		
 		if (!hasMore()) {
 			throw new EndReachedException(line, col);
 		}
@@ -53,9 +54,9 @@ public class CharFlow {
 		return peek() != -1;
 	}
 
-	public void skipBlanks() throws IOException {
+	public void skipBlanks() throws IOException, CharFlowException {
 		while ((peek() >= 0x9 && peek() <= 0xd) || peek() == 0x20 || peek() == 0x85 || peek() == 0xA0) {
-			this.current = this.reader.read();
+			next();
 		}
 	}
 
@@ -87,7 +88,8 @@ public class CharFlow {
 
 		@Override
 		public String getMessage() {
-			return "Expected '%s', got '%s' at line %s, col %s".formatted((char)target, (char)found, line, col);
+			return "Expected '%s'(%s), got '%s'(%s) at line %s, col %s".formatted((char) target, target, (char) found,
+					found, line, col);
 		}
 
 	}

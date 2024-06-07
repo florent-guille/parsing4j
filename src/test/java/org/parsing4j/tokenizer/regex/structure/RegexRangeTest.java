@@ -9,7 +9,6 @@ import java.util.stream.IntStream;
 import org.junit.Test;
 import org.parsing4j.core.IntIdentifiable;
 import org.parsing4j.core.Utils.Pair;
-import org.parsing4j.tokenizer.regex.structure.RegexRange;
 
 public class RegexRangeTest {
 
