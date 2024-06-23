@@ -1,0 +1,44 @@
+startSymbol S;
+
+rules{
+	S --> E;
+	
+	@BIOP(4, "+") E --> E '+' E;
+	@BIOP(6, "*") E --> E '*' E;
+	@BIOP(5, "-") E --> E '-' E;
+	@BIOP(7, "/") E --> E '/' E;
+	@BIOP(0, "#") E --> E '#' E;
+	@BIOP(1, "&") E --> E '&' E;
+	@BIOP(2, "==") E --> E '==' E;
+	@BIOP(3, "!=") E --> E '!=' E;
+	
+	[parent] : E --> '(' E ')';
+	[func_call] : E --> 'id' '(' E_list ')';
+ 	[var] : E --> 'id';
+ 	[integer] : E --> 'integer';
+ 	
+ 	[list] : E_list --> (E (',' E)*)?;
+}
+
+patterns{
+	'id' <-- "[a-zA-Z_][0-9a-zA-Z_]*";
+	'integer' <-- "[0-9]+";
+	
+	'+' <-- "'+'";
+	'*' <-- "'*'";
+	'-' <-- "-";
+	'/' <-- "/";
+	'#' <-- "#";
+	'&' <-- "&";
+	'==' <-- "==";
+	'!=' <-- "!=";
+	'(' <-- "'('";
+	')' <-- "')'";
+	',' <-- ",";
+}
+
+patterns{
+	'blank' <-- "{Blank}+";
+	'comment-oneline' <-- "//[^,\n]+\n?";
+	'comment-multiline' <-- r"'/*'{Any}*'*/'";
+}

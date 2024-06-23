@@ -1,5 +1,7 @@
 plugins {
+	id 'java'
     id 'java-library'
+    id 'maven-publish'
 }
 
 repositories {
@@ -13,5 +15,26 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+    
+    withSourcesJar()
+    withJavadocJar()
+}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.parsing4j'
+            artifactId = 'parsing4j'
+            version = '0.0-prealpha'
+
+            from components.java
+        }
     }
 }

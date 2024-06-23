@@ -1,0 +1,9 @@
+/*
+	This is the expression we want to parse
+*/
+// This should work without problems
+
+A == B &
+C == D #
+D != A #
+B == 2 * (A + E)
