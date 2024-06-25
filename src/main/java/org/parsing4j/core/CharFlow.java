@@ -65,11 +65,19 @@ public class CharFlow {
 		step();
 	}
 
-	public void next() throws IOException, EndOfStreamReachedException {
+	public int next() throws IOException, EndOfStreamReachedException {
 		if (!hasMore()) {
 			throw new EndOfStreamReachedException(line, column);
 		}
+		int result = peek();
 		step();
+		return result;
+	}
+
+	public void skipBlanks() throws IOException {
+		while (hasMore() && Character.isWhitespace(peek())) {
+			step();
+		}
 	}
 
 	private void step() throws IOException {
@@ -96,10 +104,11 @@ public class CharFlow {
 
 	@SuppressWarnings("serial")
 	/**
-	 * Common class for CharFlow Exception. This holds data about the position
-	 * of the reader where the exception occured
+	 * Common class for CharFlow Exception. This holds data about the position of
+	 * the reader where the exception occured
+	 * 
 	 * @author Florent Guille
-	 *  **/
+	 **/
 	public static class CharFlowException extends Exception {
 		protected int line, column;
 
@@ -134,8 +143,6 @@ public class CharFlow {
 
 	@SuppressWarnings("serial")
 	public static class UnexpectedEndOfStreamReachedException extends ExpectingCharFlowException {
-
-		private int expected;
 
 		public UnexpectedEndOfStreamReachedException(int line, int column, int expected) {
 			super(line, column, expected);
@@ -172,6 +179,23 @@ public class CharFlow {
 
 		public int getObtained() {
 			return obtained;
+		}
+	}
+
+	@SuppressWarnings("serial")
+	public static class UnwantedCharException extends CharFlowException {
+
+		private int obtained;
+
+		public UnwantedCharException(int line, int column, int obtained) {
+			super(line, column);
+			this.obtained = obtained;
+		}
+
+		@Override
+		public String getMessage() {
+			return "At line %s, column %s, got unwanted character '%s' (%s)".formatted(line, column, (char) obtained,
+					obtained);
 		}
 	}
 
