@@ -8,9 +8,23 @@ public class EtaVariable extends EtaSymbol {
 		super(name);
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public boolean simpleEquals(EtaRegex regex) {
 		return regex instanceof EtaVariable v && Objects.equals(this.name, v.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(name);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof EtaVariable v && Objects.equals(this.name, v.name);
 	}
 
 }

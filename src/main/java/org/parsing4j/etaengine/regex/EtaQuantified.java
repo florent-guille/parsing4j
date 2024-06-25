@@ -12,6 +12,10 @@ public class EtaQuantified extends EtaRegex {
 		this.target = target;
 	}
 
+	public EtaQuantifier getQuantifier() {
+		return quantifier;
+	}
+
 	@Override
 	public boolean simpleEquals(EtaRegex regex) {
 		return regex instanceof EtaQuantified q && this.quantifier == q.quantifier;

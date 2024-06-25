@@ -3,6 +3,7 @@ package org.parsing4j.core;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -68,5 +69,37 @@ public class Utils {
 	public static <T> String toStringTree(T root, Function<? super T, ? extends String> nameGetter,
 			Function<? super T, ? extends List<T>> childrenGetter) {
 		return toStringTree(root, nameGetter, childrenGetter, "", "");
+	}
+
+	public static class Pair<A, B> {
+		public A left;
+		public B right;
+
+		public Pair(A left, B right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(left, right);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof Pair pair && Objects.equals(this.left, pair.left)
+					&& Objects.equals(this.right, pair.right);
+		}
+
+		@Override
+		public String toString() {
+			return "(" + left + "," + right + ")";
+		}
+
+	}
+
+	@FunctionalInterface
+	public static interface Filter<A> {
+		public boolean isValid(A target);
 	}
 }

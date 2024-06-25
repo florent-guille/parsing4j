@@ -72,8 +72,8 @@ public class EtaRegexParser {
 				result.push(regex);
 			}
 		}
-		
-		if(result.size() == 0) {
+
+		if (result.size() == 0) {
 			return new EtaBlank();
 		}
 
@@ -107,6 +107,10 @@ public class EtaRegexParser {
 		if (flow.peek() == '\'') {
 			return readTerminal(flow);
 		}
+		
+		if(Character.isJavaIdentifierPart(flow.peek())) {
+			return readVariable(flow);
+		}
 
 		throw new UnwantedCharException(flow.getLine(), flow.getColumn(), flow.peek());
 	}
@@ -139,6 +143,23 @@ public class EtaRegexParser {
 		flow.skipBlanks();
 
 		return new EtaTerminal(builder.toString());
+	}
+
+	private static EtaVariable readVariable(CharFlow flow) throws IOException, CharFlowException {
+		StringBuilder builder = new StringBuilder();
+		if (!Character.isJavaIdentifierStart(flow.peek())) {
+			throw new UnwantedCharException(flow.getLine(), flow.getColumn(), flow.peek());
+		}
+
+		builder.append((char) flow.next());
+
+		while (flow.hasMore() && Character.isJavaIdentifierPart(flow.peek())) {
+			builder.append((char) flow.next());
+		}
+		
+		flow.skipBlanks();
+
+		return new EtaVariable(builder.toString());
 	}
 
 	private static void read(CharFlow flow, int target) throws IOException, CharFlowException {
