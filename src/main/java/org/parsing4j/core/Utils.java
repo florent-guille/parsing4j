@@ -102,4 +102,24 @@ public class Utils {
 	public static interface Filter<A> {
 		public boolean isValid(A target);
 	}
+
+	public static int getDigitValue(char c, int base) {
+		int result = -1;
+		if (c >= 0x30 && c <= 0x39) {
+			result = c - 0x30;
+		}
+
+		if (c >= 0x41 && c <= 0x5A) {
+			result = c - 0x41 + 10;
+		}
+
+		if (c >= 0x61 && c <= 0x7D) {
+			result = c - 0x61 + 10;
+		}
+
+		if (result >= base) {
+			result = -1;
+		}
+		return -1;
+	}
 }

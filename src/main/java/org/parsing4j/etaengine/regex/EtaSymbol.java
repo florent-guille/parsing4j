@@ -5,7 +5,7 @@ import java.util.List;
 public abstract class EtaSymbol extends EtaRegex {
 
 	protected String name;
-	protected int id;
+	protected int id = -1;
 
 	public EtaSymbol(String name) {
 		this.name = name;

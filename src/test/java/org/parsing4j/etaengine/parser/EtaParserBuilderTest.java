@@ -1,11 +1,16 @@
 package org.parsing4j.etaengine.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
+import org.parsing4j.core.CharFlow;
 import org.parsing4j.core.Token;
 import org.parsing4j.core.Utils;
 import org.parsing4j.etaengine.parser.EtaParser.ParserReducer;
+import org.parsing4j.tokenizer.Tokenizer;
+import org.parsing4j.tokenizer.regex.MatchingPolicy;
+import org.parsing4j.tokenizer.regex.RegexTokenizerBuilder;
 
 public class EtaParserBuilderTest {
 
@@ -47,24 +52,27 @@ public class EtaParserBuilderTest {
 
 		parser.setReducer(reducer);
 
-		List<Token> tokens = List.of(//
-				new Token(parser.getTerminal("("), "(", 0, 0), //
-				new Token(parser.getTerminal("id"), "A", 0, 0), //
-				new Token(parser.getTerminal("+"), "+", 0, 0), //
-				new Token(parser.getTerminal("id"), "B", 0, 0), //
-				new Token(parser.getTerminal(")"), ")", 0, 0), //
-				new Token(parser.getTerminal("*"), "*", 0, 0), //
-				new Token(parser.getTerminal("id"), "C", 0, 0), //
-				new Token(parser.getTerminal("-"), "-", 0, 0), //
-				new Token(parser.getTerminal("("), "(", 0, 0), //
-				new Token(parser.getTerminal("id"), "D", 0, 0), //
-				new Token(parser.getTerminal("-"), "-", 0, 0), //
-				new Token(parser.getTerminal("id"), "E", 0, 0), //
-				new Token(parser.getTerminal(")"), ")", 0, 0), //
-				new Token(parser.getEOF(), null, 1, 0)//
-		);
+		RegexTokenizerBuilder tokenizerBuilder = new RegexTokenizerBuilder();
+		tokenizerBuilder.addPattern(parser.getTerminal("id"), "[a-zA-Z][0-9a-zA-Z]*", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("+"), "'+'", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("-"), "'-'", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("*"), "'*'", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("/"), "'/'", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("("), "'('", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal(")"), "')'", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("blank"), "{Blank}+", MatchingPolicy.GREEDY, Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("comment-oneline"), "//[^,\n]*\n", MatchingPolicy.GREEDY,
+				Set.of());
+		tokenizerBuilder.addPattern(parser.getTerminal("comment-multiline"), "'/*'{Any}*'*/'", MatchingPolicy.RELUCTANT,
+				Set.of());
 
-		TestExpr result = (TestExpr) parser.parse(tokens);
+		Tokenizer tokenizer = tokenizerBuilder.build(parser.getEOF());
+		tokenizer.setFilter(token -> token.getTerminal().getId() != -1);
+
+		CharFlow flow = new CharFlow(
+				Thread.currentThread().getContextClassLoader().getResourceAsStream("parsing_data/data_1.txt"));
+
+		TestExpr result = (TestExpr) parser.parse(tokenizer.iterator(flow, parser.getEOF().getId()));
 
 		System.out.println(Utils.toStringTree(result, TestExpr::getRepr, TestExpr::getChildren));
 	}
